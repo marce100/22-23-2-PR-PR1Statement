@@ -1,4 +1,37 @@
 package uoc.ds.pr.model;
 
+
+import java.time.LocalDate;
+
 public class Attendee {
+
+    private String id;
+    private String name;
+    private String surname;
+    private LocalDate dateOfBirth;
+    private int numEvents;
+
+    public Attendee(String id, String name, String surname, LocalDate dateOfBirth) {
+        this.id = id;
+        this.name = name;
+        this.surname = surname;
+        this.dateOfBirth = dateOfBirth;
+        this.numEvents = 0;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getSurname() {
+        return surname;
+    }
+
+    public int numEvents() {
+        return numEvents;
+    }
 }

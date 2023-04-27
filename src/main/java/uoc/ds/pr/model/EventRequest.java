@@ -28,4 +28,8 @@ public class EventRequest {
         this.endDate = endDate;
         this.allowRegister = allowRegister;
     }
+
+    public String getRequestId() {
+        return id;
+    }
 }
