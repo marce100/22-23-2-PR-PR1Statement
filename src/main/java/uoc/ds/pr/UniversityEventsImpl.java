@@ -78,7 +78,13 @@ public class UniversityEventsImpl implements UniversityEvents {
 
     @Override
     public Iterator<EventRequest> getRejectedRequests() throws NoEventRequestException {
-        return null;
+
+        // If there are no requests in the queue, throw an exception.
+        if (requests.isEmpty()) throw new NoEventRequestException("There are no pending requests.");
+
+        // Returns an iterator to loop through all the rejected requests.
+        return requests.values();
+
     }
 
     @Override
