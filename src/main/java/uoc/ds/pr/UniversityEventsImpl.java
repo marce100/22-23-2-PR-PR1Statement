@@ -12,18 +12,35 @@ import java.util.LinkedList;
 
 public class UniversityEventsImpl implements UniversityEvents {
 
-    private ArrayList<Entity> entities ;
-    private ArrayList<Attendee> attendees ;
-    private ArrayList<Event> events;
-    private QueueArrayImpl<EventRequest> requests;
-    private LinkedList<EventRequest> rejectedRequests;
+    private ArrayList<Attendee> attendees ;                 // Attendees: Java Array: Attendee [].
+    //private LinkedList<Event> entityEvents;                 // Events organized by an entity: Linked List: LinkedList.
+    private QueueArrayImpl<EventRequest> requests;          // Requests : Queue: QueueArrayImpl.
+    private LinkedList<EventRequest> rejectedRequests;      // Rejected Requests: Linked List: LinkedList.
+    private ArrayList<Entity> entities ;                    // Entities: Java Array: Entities [].
+    private ArrayList<Event> events;                        // Events: Java Array: Events [].
+    //private LinkedList<Event> attendeeEvents;               // Events an attendee goes to: Linked List: LinkedList.
+    //private LinkedList<Rating> eventEvaluations;            // Evaluations of an event: Linked List: LinkedList.
+    //private QueueArrayImpl<Attendee> eventRegistrations;    // Attendees pointed to an event : Queue: QueueArrayImpl.
+    //private int totalRequests;                              // Total Requests : Integer: Integer.
+    //private int totalRejectedRequests;                      // Total Rejected Requests : Integer: Integer.
+    //private Attendee mostActiveAttendee;                    // Most Active Attendee: Pointer to Attendee.
+    //private OrdererVector highestRatedEvent;                // Highest Rated Event: Ordered Vector: OrderedVector.
+
 
     public UniversityEventsImpl() {
-        entities= new ArrayList<Entity>();
         attendees= new ArrayList<Attendee>();
-        events= new ArrayList<Event>();
+        //entityEvents= new LinkedList<Event>();
         requests= new QueueArrayImpl<EventRequest>();
-        rejectedRequests = new LinkedList<EventRequest>();
+        rejectedRequests= new LinkedList<EventRequest>();
+        entities= new ArrayList<Entity>();
+        events= new ArrayList<Event>();
+        //attendeeEvents= new LinkedList<Event>();
+        //eventEvaluations= new LinkedList<Rating>();
+        //eventRegistrations= new QueueArrayImpl<Attendee>();
+        //totalRequests= 0;
+        //totalRejectedRequests= 0;
+        //mostActiveAttendee= null;
+        //highestRatedEvent;
     }
 
     @Override
