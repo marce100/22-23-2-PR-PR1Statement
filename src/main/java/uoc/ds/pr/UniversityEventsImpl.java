@@ -148,7 +148,6 @@ public class UniversityEventsImpl implements UniversityEvents {
                     er.getStartDate(),
                     er.getEndDate(),
                     er.isAllowRegister()));
-
         }else{
             // Añadir  a la Lista enlazada de Solicitudes rechazadas
             rejectedRequests.insertEnd(er);
@@ -200,12 +199,21 @@ public class UniversityEventsImpl implements UniversityEvents {
 
     @Override
     public double getPercentageRejectedRequests() {
+        System.out.println("---------");
+        int total=events.size();
+        int rechazadas=numRejectedRequests();
+        System.out.println("total: "+total);
+        System.out.println("rechazadas: "+rechazadas);
 
-        System.out.println("totalRequest: "+numRequests());
-        System.out.println("totalRejectedRequests: "+numRejectedRequests());
 
-        if (totalRejectedRequests==0) return 0;
-        return totalRequests*100/totalRejectedRequests;
+        if (total==0) return 0;
+
+        System.out.println("---------->"+(rechazadas/total));
+
+
+        System.out.println(1/4);
+
+        return (rechazadas/total);
 
     }
 
