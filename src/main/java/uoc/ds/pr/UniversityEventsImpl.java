@@ -45,22 +45,48 @@ public class UniversityEventsImpl implements UniversityEvents {
 
     @Override
     public void addEntity(String id, String name, String description, EntityType entityType) {
-        // Mirar las condiciones para añadir una entidad (NO SE REPITA ID,....)
-        entities.add(new Entity(id, name, description, entityType) );
+        Entity found= null;
+        for(Entity entity : entities)
+            if(entity.getId().equals(id))
+                found= entity;
 
+        if (found==null) {
+            entities.add(new Entity(id, name, description, entityType));
+        }else {
+            found.setName(name);
+            found.setDescription(description);
+            found.setEntityType(entityType);
+        }
     }
 
     @Override
     public void addAttendee(String id, String name, String surname, LocalDate dateOfBirth) {
-        // Mirar las condiciones para añadir UN ASISTENTE (NO SE REPITA ID,....)
-        attendees.add(new Attendee(id, name, surname, dateOfBirth) );
+        Attendee found= null;
+        for(Attendee attendee : attendees)
+            if(attendee.getId().equals(id))
+                found= attendee;
 
+        if (found==null) {
+            attendees.add(new Attendee(id, name, surname, dateOfBirth));
+        }else {
+            found.setName(name);
+            found.setSurname(surname);
+            found.setDateOfBirth(dateOfBirth);
+        }
     }
 
     @Override
     public void addEventRequest(String id, String eventId, String entityId, String description, InstallationType installationType, byte resources, int max, LocalDate startDate, LocalDate endDate, boolean allowRegister) throws EntityNotFoundException {
-        // Mirar si hay condiciones para añadir....
-        requests.add(new EventRequest(id, eventId, entityId, description, installationType, resources, max, startDate, endDate, allowRegister));
+        boolean found= false;
+        for(Entity entity : entities)
+            if(entity.getId().equals(id))
+                found= true;
+
+        if (!found) {
+            throw new EntityNotFoundException("The entity does not exist.");
+        }else {
+            requests.add(new EventRequest(id, eventId, entityId, description, installationType, resources, max, startDate, endDate, allowRegister));
+        }
     }
 
     @Override
@@ -111,7 +137,12 @@ public class UniversityEventsImpl implements UniversityEvents {
 
     @Override
     public Iterator<Event> getAllEvents() throws NoEventsException {
-        return null;
+        //return null;
+
+        // If there are no events in the queue, throw an exception.
+        if (events.isEmpty()) throw new NoEventsException("There are no events.");
+
+        return (Iterator) events.listIterator();
     }
 
     @Override
