@@ -15,7 +15,7 @@ public class Event extends EventRequest{
         super(id, eventId, entityId, description, installationType, resources, max, startDate, endDate, allowRegister);
 
         this.rating = rating;
-        in progress }
+    }
 
     public float rating() {
         return rating;

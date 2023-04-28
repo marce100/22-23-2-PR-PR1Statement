@@ -18,9 +18,14 @@ public class UniversityEventsImpl implements UniversityEvents {
     private LinkedList<EventRequest> rejectedRequests;      // Rejected Requests: Linked List: LinkedList.
     private ArrayList<Entity> entities ;                    // Entities: Java Array: Entities [].
     private ArrayList<Event> events;                        // Events: Java Array: Events [].
-    //private LinkedList<Event> attendeeEvents;               // Events an attendee goes to: Linked List: LinkedList.
+
+
+    private LinkedList<AttendeeEvent> attendeesEvents;      // Events an attendee goes to: Linked List: LinkedList.
     //private LinkedList<Rating> eventEvaluations;            // Evaluations of an event: Linked List: LinkedList.
     //private QueueArrayImpl<Attendee> eventRegistrations;    // Attendees pointed to an event : Queue: QueueArrayImpl.
+
+
+
     //private int totalRequests;                              // Total Requests : Integer: Integer.
     //private int totalRejectedRequests;                      // Total Rejected Requests : Integer: Integer.
     //private Attendee mostActiveAttendee;                    // Most Active Attendee: Pointer to Attendee.
@@ -34,9 +39,14 @@ public class UniversityEventsImpl implements UniversityEvents {
         rejectedRequests= new LinkedList<EventRequest>();
         entities= new ArrayList<Entity>();
         events= new ArrayList<Event>();
-        //attendeeEvents= new LinkedList<Event>();
+
+
+        attendeesEvents= new LinkedList<AttendeeEvent>();
         //eventEvaluations= new LinkedList<Rating>();
         //eventRegistrations= new QueueArrayImpl<Attendee>();
+
+
+
         //totalRequests= 0;
         //totalRejectedRequests= 0;
         //mostActiveAttendee= null;
@@ -111,26 +121,49 @@ public class UniversityEventsImpl implements UniversityEvents {
 
     @Override
     public void signUpEvent(String attendeeId, String eventId) throws AttendeeNotFoundException, EventNotFoundException, NotAllowedException, AttendeeAlreadyInEventException {
-        /**
-         * @pre true.
-         * @post the number of attendees registered for an event will be the same plus one.
-         * If the maximum number of registered attendees has been exceeded, they will be added as substitutes.
-         *
-         * @throws AttendeeNotFoundException If the attendee does not exist, the error will be reported.
-         * @throws EventNotFoundException If the event does not exist, the error will be reported.
-         * @throws NotAllowedException If the event does not admit attendees, the error will be reported.
-         * @throws AttendeeAlreadyInEventException If the attendee is already registered in that event, the error will be reported
-         */
+
+        boolean found= false;
+        for(Attendee attendee : attendees)
+            if(attendee.getId().equals(attendeeId))
+                found= true;
+
+        if (!found) throw new AttendeeNotFoundException("The attendee does not exist.");
+
+        found= false;
+        for(Event event : events)
+            if(event.getEventId().equals(eventId))
+                found= true;
+
+        if (!found) throw new EventNotFoundException("The event does not exist.");
+
+        Iterator i= attendeesEvents.values();
+        while (i.hasNext()){
+            AttendeeEvent attendeeEvent = (AttendeeEvent) i.next();
+            if( attendeeEvent.getEventId().equals(eventId) && attendeeEvent.getAttendeeId().equals(attendeeId) )
+                throw new AttendeeAlreadyInEventException("The assistant is already registered for the event.");
+        }
+
+        int count= 0;
+         i= attendeesEvents.values();
+        while (i.hasNext()){
+            if( ((AttendeeEvent)i.next()).getEventId().equals(eventId) )
+                count++;
+        }
+        if (count<MAX_NUM_ATTENDEES){
+            attendeesEvents.insertEnd(new AttendeeEvent(attendeeId,eventId,"normal"));
+        }
+        else{
+            attendeesEvents.insertEnd(new AttendeeEvent(attendeeId,eventId,"substitute"));
+            throw new NotAllowedException("The event does not admit attendees.");
+        }
+
     }
 
     @Override
     public double getPercentageRejectedRequests() {
-        return 0;
-        /**
-         * @pre true.
-         * @post
-         * @return returns a real number with the percentage of requests that have not been approved.
-         */
+
+        return rejectedRequests.size()*100/(rejectedRequests.size()+events.size());
+
     }
 
     @Override
