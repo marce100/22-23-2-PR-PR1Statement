@@ -32,4 +32,44 @@ public class EventRequest {
     public String getRequestId() {
         return id;
     }
+
+    public String getId() {
+        return id;
+    }
+
+    public String getEventId() {
+        return eventId;
+    }
+
+    public String getEntityId() {
+        return entityId;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public UniversityEvents.InstallationType getInstallationType() {
+        return installationType;
+    }
+
+    public byte getResources() {
+        return resources;
+    }
+
+    public int getMax() {
+        return max;
+    }
+
+    public LocalDate getStartDate() {
+        return startDate;
+    }
+
+    public LocalDate getEndDate() {
+        return endDate;
+    }
+
+    public boolean isAllowRegister() {
+        return allowRegister;
+    }
 }

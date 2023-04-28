@@ -10,6 +10,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import edu.uoc.ds.adt.sequential.LinkedList;
 
+import javax.print.attribute.standard.MediaSize;
+
 public class UniversityEventsImpl implements UniversityEvents {
 
     private ArrayList<Attendee> attendees ;                 // Attendees: Java Array: Attendee [].
@@ -26,8 +28,8 @@ public class UniversityEventsImpl implements UniversityEvents {
 
 
 
-    //private int totalRequests;                              // Total Requests : Integer: Integer.
-    //private int totalRejectedRequests;                      // Total Rejected Requests : Integer: Integer.
+    private int totalRequests;                              // Total Requests : Integer: Integer.
+    private int totalRejectedRequests;                      // Total Rejected Requests : Integer: Integer.
     //private Attendee mostActiveAttendee;                    // Most Active Attendee: Pointer to Attendee.
     //private OrdererVector highestRatedEvent;                // Highest Rated Event: Ordered Vector: OrderedVector.
 
@@ -47,26 +49,37 @@ public class UniversityEventsImpl implements UniversityEvents {
 
 
 
-        //totalRequests= 0;
-        //totalRejectedRequests= 0;
+        totalRequests= 0;
+        totalRejectedRequests= 0;
         //mostActiveAttendee= null;
         //highestRatedEvent;
     }
 
     @Override
     public void addEntity(String id, String name, String description, EntityType entityType) {
+
         Entity found= null;
         for(Entity entity : entities)
             if(entity.getId().equals(id))
                 found= entity;
 
-        if (found==null) {
-            entities.add(new Entity(id, name, description, entityType));
-        }else {
-            found.setName(name);
-            found.setDescription(description);
-            found.setEntityType(entityType);
+        // The entity code is not new, so the entity data will have been updated.
+        if (found!=null) {
+            entities.remove(found);
         }
+
+        switch (entityType) {
+            case STUDENT:
+                entities.add(new Student(id, name, description));
+                break;
+            case PROFESSOR:
+                entities.add(new Professor(id, name, description));
+                break;
+            case OTHER:
+                entities.add(new Organism(id, name, description));
+                break;
+        }
+
     }
 
     @Override
@@ -87,16 +100,45 @@ public class UniversityEventsImpl implements UniversityEvents {
 
     @Override
     public void addEventRequest(String id, String eventId, String entityId, String description, InstallationType installationType, byte resources, int max, LocalDate startDate, LocalDate endDate, boolean allowRegister) throws EntityNotFoundException {
-        boolean found= false;
-        for(Entity entity : entities)
-            if(entity.getId().equals(id))
-                found= true;
 
-        if (!found) {
+        Entity foundEntity= null;
+        for(Entity entity : entities)
+            if(entity.getId().equals(entityId))
+                foundEntity= entity;
+
+        // The entity does not exist.
+        if (foundEntity==null) {
             throw new EntityNotFoundException("The entity does not exist.");
-        }else {
-            requests.add(new EventRequest(id, eventId, entityId, description, installationType, resources, max, startDate, endDate, allowRegister));
         }
+
+
+        /**
+         * @pre the event request and the event do not exist.
+         * @post the requests will be the same plus a new one.
+         *
+         * @throws EntityNotFoundException If the entity does not exist, the error will be reported
+         */
+
+//        for(EventRequest eventRequest : requests)
+//            if(eventRequest.getRequestId().equals(id))
+//                found= true;
+
+        boolean foundRequet= false;
+        Iterator i= requests.values();
+        while (i.hasNext()){
+            if ( ((EventRequest)i.next()).getRequestId().equals(id) )
+                foundRequet= true;
+        }
+        if (!foundRequet) {
+            requests.add(new EventRequest(id, eventId, entityId, description, installationType, resources, max, startDate, endDate, allowRegister));
+            totalRequests++;
+        }
+
+
+
+
+
+
     }
 
     @Override
@@ -105,18 +147,29 @@ public class UniversityEventsImpl implements UniversityEvents {
         // If there are no requests in the queue, throw an exception.
         if (requests.isEmpty()) throw new NoEventRequestException("There are no pending requests.");
 
-        // Retrieve the element at the head of the queue
-        EventRequest eventRequest = requests.poll();
+        // Retrieve the element at the head of the queue and delete it
+        EventRequest er = requests.poll();
+        totalRequests--;
 
         if (status.equals(Status.ENABLED)){
             // Añadir al Array de Eventos
-            events.add((Event)eventRequest);
+            events.add(new Event(er.getEventId(),
+                    er.getEntityId(),
+                    er.getDescription(),
+                    er.getInstallationType(),
+                    er.getResources(),
+                    er.getMax(),
+                    er.getStartDate(),
+                    er.getEndDate(),
+                    er.isAllowRegister()));
+
         }else{
             // Añadir  a la Lista enlazada de Solicitudes rechazadas
-            rejectedRequests.insertEnd(eventRequest);
+            rejectedRequests.insertEnd(er);
+            totalRejectedRequests++;
         }
 
-        return eventRequest;
+        return er;
     }
 
     @Override
@@ -162,7 +215,11 @@ public class UniversityEventsImpl implements UniversityEvents {
     @Override
     public double getPercentageRejectedRequests() {
 
-        return rejectedRequests.size()*100/(rejectedRequests.size()+events.size());
+        System.out.println("totalRequest: "+numRequests());
+        System.out.println("totalRejectedRequests: "+numRejectedRequests());
+
+        if (totalRejectedRequests==0) return 0;
+        return totalRequests*100/totalRejectedRequests;
 
     }
 
@@ -170,10 +227,10 @@ public class UniversityEventsImpl implements UniversityEvents {
     public Iterator<EventRequest> getRejectedRequests() throws NoEventRequestException {
 
         // If there are no requests in the queue, throw an exception.
-        if (requests.isEmpty()) throw new NoEventRequestException("There are no pending requests.");
+        if (rejectedRequests.isEmpty()) throw new NoEventRequestException("There are no pending requests.");
 
         // Returns an iterator to loop through all the rejected requests.
-        return requests.values();
+        return rejectedRequests.values();
 
     }
 
@@ -195,7 +252,7 @@ public class UniversityEventsImpl implements UniversityEvents {
         // If there are no events in the queue, throw an exception.
         if (events.isEmpty()) throw new NoEventsException("There are no events.");
 
-        return (Iterator) events.listIterator();
+        return (edu.uoc.ds.traversal.Iterator)events.listIterator();
     }
 
     @Override
@@ -269,7 +326,7 @@ public class UniversityEventsImpl implements UniversityEvents {
 
     @Override
     public int numRequests() {
-        return requests.size();
+        return totalRequests;
     }
 
     @Override
@@ -302,7 +359,7 @@ public class UniversityEventsImpl implements UniversityEvents {
 
     @Override
     public int numRejectedRequests() {
-        return 0;
+        return totalRejectedRequests;
     }
 
     @Override
@@ -314,7 +371,14 @@ public class UniversityEventsImpl implements UniversityEvents {
     public Entity getEntity(String entityId) {
         for(Entity entity : entities)
             if(entity.getId().equals(entityId))
-                return entity;
+                if (entity instanceof Professor) {
+                    return (Professor) entity;
+                } else if (entity instanceof Student) {
+                    return (Student) entity;
+                } else if (entity instanceof Organism){
+                    return (Organism) entity;
+                }
+                //return entity;
         return null;
     }
 
