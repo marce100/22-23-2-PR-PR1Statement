@@ -39,6 +39,8 @@ public class Event {
         return eventId;
     }
 
+    public String getEntityId() { return entityId; }
+
     public float rating() {
         return rating;
     }

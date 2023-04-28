@@ -8,6 +8,9 @@ import uoc.ds.pr.model.*;
 import uoc.ds.pr.exceptions.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.stream.Collectors;
+
 import edu.uoc.ds.adt.sequential.LinkedList;
 
 import javax.print.attribute.standard.MediaSize;
@@ -111,18 +114,6 @@ public class UniversityEventsImpl implements UniversityEvents {
             throw new EntityNotFoundException("The entity does not exist.");
         }
 
-
-        /**
-         * @pre the event request and the event do not exist.
-         * @post the requests will be the same plus a new one.
-         *
-         * @throws EntityNotFoundException If the entity does not exist, the error will be reported
-         */
-
-//        for(EventRequest eventRequest : requests)
-//            if(eventRequest.getRequestId().equals(id))
-//                found= true;
-
         boolean foundRequet= false;
         Iterator i= requests.values();
         while (i.hasNext()){
@@ -133,11 +124,6 @@ public class UniversityEventsImpl implements UniversityEvents {
             requests.add(new EventRequest(id, eventId, entityId, description, installationType, resources, max, startDate, endDate, allowRegister));
             totalRequests++;
         }
-
-
-
-
-
 
     }
 
@@ -176,18 +162,18 @@ public class UniversityEventsImpl implements UniversityEvents {
     public void signUpEvent(String attendeeId, String eventId) throws AttendeeNotFoundException, EventNotFoundException, NotAllowedException, AttendeeAlreadyInEventException {
 
         boolean found= false;
-        for(Attendee attendee : attendees)
-            if(attendee.getId().equals(attendeeId))
-                found= true;
-
-        if (!found) throw new AttendeeNotFoundException("The attendee does not exist.");
-
-        found= false;
         for(Event event : events)
             if(event.getEventId().equals(eventId))
                 found= true;
 
         if (!found) throw new EventNotFoundException("The event does not exist.");
+
+        found= false;
+        for(Attendee attendee : attendees)
+            if(attendee.getId().equals(attendeeId))
+                found= true;
+
+        if (!found) throw new AttendeeNotFoundException("The attendee does not exist.");
 
         Iterator i= attendeesEvents.values();
         while (i.hasNext()){
@@ -236,13 +222,21 @@ public class UniversityEventsImpl implements UniversityEvents {
 
     @Override
     public Iterator<Event> getEventsByEntity(String entityId) throws NoEventsException {
-        return null;
-        /**
-         * @pre the entity exists.
-         * @post
-         * @return returns an iterator to loop through all the events of an entity.
-         * @throws NoEventsException If there are no events, the error will be reported.
-         */
+
+        boolean found= false;
+        for(Event event : events)
+            if(event.getEntityId().equals(entityId))
+                found= true;
+
+        if (!found) throw new NoEventsException("There are no events.");
+
+        // Filter by entityId
+        ArrayList<Event> filteredList = events.stream()
+                .filter(event -> event.getEntityId() == entityId)
+                .collect(Collectors.toCollection(ArrayList::new));
+
+        return new IteratorArrayImpl(filteredList.toArray(), events.size(), 0);
+
     }
 
     @Override
@@ -297,7 +291,7 @@ public class UniversityEventsImpl implements UniversityEvents {
 
     @Override
     public Attendee mostActiveAttendee() throws AttendeeNotFoundException {
-        return null;
+        //return null;
         /**
          * @pre true.
          * @post
@@ -305,6 +299,22 @@ public class UniversityEventsImpl implements UniversityEvents {
          * @return returns the attendee who has attended the most events, the most active attendee.
          * @throws AttendeeNotFoundException If none exist, the error will be reported.
          */
+
+        if (attendeesEvents.isEmpty()) throw new AttendeeNotFoundException("There is no more active assistant.");
+
+
+
+        Attendee mostActiveAttendee = attendees.get(0);
+        for(Attendee attendee : attendees)
+            if(attendee.numEvents()>mostActiveAttendee.numEvents())
+                mostActiveAttendee= attendee;
+        return mostActiveAttendee;
+
+        //aqui
+
+
+
+
     }
 
     @Override
@@ -340,15 +350,34 @@ public class UniversityEventsImpl implements UniversityEvents {
 
     @Override
     public int numEventsByAttendee(String attendeeId) {
-        for(Attendee attendee : attendees)
-            if(attendee.getId().equals(attendeeId))
-                return attendee.numEvents();
-        return 0;
+//        for(Attendee attendee : attendees)
+//            if(attendee.getId().equals(attendeeId))
+//                return attendee.numEvents();
+//        return 0;
+
+
+        int count=0;
+        Iterator i= attendeesEvents.values();
+        while (i.hasNext()){
+            if ( ((AttendeeEvent)i.next()).getAttendeeId().equals(attendeeId) )
+                count++;
+        }
+        return count;
+
     }
 
     @Override
     public int numAttendeesByEvent(String eventId) {
-        return 0;
+
+        int count=0;
+        Iterator i= attendeesEvents.values();
+        while (i.hasNext()){
+            if ( ((AttendeeEvent)i.next()).getEventId().equals(eventId) )
+                count++;
+        }
+        return count;
+
+
     }
 
     @Override
@@ -359,6 +388,10 @@ public class UniversityEventsImpl implements UniversityEvents {
     @Override
     public int numEventsByEntity(String entityId) {
         return 0;
+
+
+
+
     }
 
     @Override
