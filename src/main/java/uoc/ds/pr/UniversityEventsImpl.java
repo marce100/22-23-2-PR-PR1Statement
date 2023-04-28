@@ -160,19 +160,20 @@ public class UniversityEventsImpl implements UniversityEvents {
     @Override
     public void signUpEvent(String attendeeId, String eventId) throws AttendeeNotFoundException, EventNotFoundException, NotAllowedException, AttendeeAlreadyInEventException {
 
-        boolean found= false;
+        Event foundEvent= null;
         for(Event event : events)
             if(event.getEventId().equals(eventId))
-                found= true;
+                foundEvent= event;
 
-        if (!found) throw new EventNotFoundException("The event does not exist.");
+        if (foundEvent==null) throw new EventNotFoundException("The event does not exist.");
+        if (!foundEvent.isAllowRegister()) throw new NotAllowedException("The event does not admit attendees");
 
-        found= false;
+        boolean foundAttendee= false;
         for(Attendee attendee : attendees)
             if(attendee.getId().equals(attendeeId))
-                found= true;
+                foundAttendee= true;
 
-        if (!found) throw new AttendeeNotFoundException("The attendee does not exist.");
+        if (!foundAttendee) throw new AttendeeNotFoundException("The attendee does not exist.");
 
         Iterator i= attendeesEvents.values();
         while (i.hasNext()){
@@ -187,33 +188,19 @@ public class UniversityEventsImpl implements UniversityEvents {
             if( ((AttendeeEvent)i.next()).getEventId().equals(eventId) )
                 count++;
         }
-        if (count<MAX_NUM_ATTENDEES){
+        if (count<MAX_NUM_ATTENDEES)
             attendeesEvents.insertEnd(new AttendeeEvent(attendeeId,eventId,"normal"));
-        }
-        else{
+        else
             attendeesEvents.insertEnd(new AttendeeEvent(attendeeId,eventId,"substitute"));
-            throw new NotAllowedException("The event does not admit attendees.");
-        }
 
     }
 
     @Override
     public double getPercentageRejectedRequests() {
-        System.out.println("---------");
+
         int total=events.size();
-        int rechazadas=numRejectedRequests();
-        System.out.println("total: "+total);
-        System.out.println("rechazadas: "+rechazadas);
-
-
         if (total==0) return 0;
-
-        System.out.println("---------->"+(rechazadas/total));
-
-
-        System.out.println(1/4);
-
-        return (rechazadas/total);
+        return (double)numRejectedRequests()/total;
 
     }
 
@@ -376,6 +363,20 @@ public class UniversityEventsImpl implements UniversityEvents {
 
     @Override
     public int numAttendeesByEvent(String eventId) {
+
+        /*
+        int count=0;
+        Iterator i= attendeesEvents.values();
+        while (i.hasNext()){
+            AttendeeEvent e = ((AttendeeEvent)i.next());
+            if ( e.getEventId().equals(eventId) ) {
+                System.out.println(e.toString());
+                count++;
+            }
+        }
+        return count;
+         */
+
 
         int count=0;
         Iterator i= attendeesEvents.values();

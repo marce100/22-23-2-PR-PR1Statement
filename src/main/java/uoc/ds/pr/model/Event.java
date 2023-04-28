@@ -41,6 +41,10 @@ public class Event {
 
     public String getEntityId() { return entityId; }
 
+    public boolean isAllowRegister() {
+        return allowRegister;
+    }
+
     public float rating() {
         return rating;
     }

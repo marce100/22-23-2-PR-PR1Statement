@@ -18,4 +18,11 @@ public class AttendeeEvent {
     public String getAttendeeId() {
         return attendeeId;
     }
+
+/*
+    public String toString() {
+    return "attendeeId: "+attendeeId+"   eventId: "+eventId;
+    }
+*/
+
 }
