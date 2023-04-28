@@ -3,7 +3,7 @@ package uoc.ds.pr;
 
 import edu.uoc.ds.adt.sequential.List;
 import edu.uoc.ds.adt.sequential.QueueArrayImpl;
-import edu.uoc.ds.traversal.Iterator;
+import edu.uoc.ds.traversal.*;
 import uoc.ds.pr.model.*;
 import uoc.ds.pr.exceptions.*;
 import java.time.LocalDate;
@@ -252,7 +252,11 @@ public class UniversityEventsImpl implements UniversityEvents {
         // If there are no events in the queue, throw an exception.
         if (events.isEmpty()) throw new NoEventsException("There are no events.");
 
-        return (edu.uoc.ds.traversal.Iterator)events.listIterator();
+        return new IteratorArrayImpl(events.toArray(), events.size(), 0);
+
+        //return (Iterator)events.listIterator();
+
+
     }
 
     @Override
