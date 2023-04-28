@@ -1,6 +1,7 @@
 package uoc.ds.pr.model;
 
 
+
 import java.time.LocalDate;
 
 public class Attendee {
