@@ -19,10 +19,15 @@ public class AttendeeEvent {
         return attendeeId;
     }
 
-/*
-    public String toString() {
-    return "attendeeId: "+attendeeId+"   eventId: "+eventId;
+    public String getTypeAttendee() { return typeAttendee; }
+
+
+
+
+    /*
+    public String toString(){
+        return "--> eventId: "+getEventId()+" --> attendeeId: "+getAttendeeId()+" --> typeAttendee: "+getTypeAttendee();
     }
-*/
+    */
 
 }

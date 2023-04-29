@@ -56,4 +56,14 @@ public class Attendee {
         this.dateOfBirth = dateOfBirth;
     }
 
+    public void incNumEvents() {
+        this.numEvents++;
+    }
+
+    /*
+    public String toString(){
+        return " ---> attendeeId: "+getId()+" ---> numEvents: "+numEvents();
+    }
+    */
+
 }

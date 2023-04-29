@@ -33,7 +33,7 @@ public class UniversityEventsImpl implements UniversityEvents {
 
     private int totalRequests;                              // Total Requests : Integer: Integer.
     private int totalRejectedRequests;                      // Total Rejected Requests : Integer: Integer.
-    //private Attendee mostActiveAttendee;                    // Most Active Attendee: Pointer to Attendee.
+    private Attendee mostActiveAttendee;                    // Most Active Attendee: Pointer to Attendee.
     //private OrdererVector highestRatedEvent;                // Highest Rated Event: Ordered Vector: OrderedVector.
 
 
@@ -54,7 +54,7 @@ public class UniversityEventsImpl implements UniversityEvents {
 
         totalRequests= 0;
         totalRejectedRequests= 0;
-        //mostActiveAttendee= null;
+        mostActiveAttendee= null;
         //highestRatedEvent;
     }
 
@@ -67,9 +67,8 @@ public class UniversityEventsImpl implements UniversityEvents {
                 found= entity;
 
         // The entity code is not new, so the entity data will have been updated.
-        if (found!=null) {
+        if (found!=null)
             entities.remove(found);
-        }
 
         switch (entityType) {
             case STUDENT:
@@ -110,9 +109,8 @@ public class UniversityEventsImpl implements UniversityEvents {
                 foundEntity= entity;
 
         // The entity does not exist.
-        if (foundEntity==null) {
+        if (foundEntity==null)
             throw new EntityNotFoundException("The entity does not exist.");
-        }
 
         boolean foundRequet= false;
         Iterator i= requests.values();
@@ -133,7 +131,7 @@ public class UniversityEventsImpl implements UniversityEvents {
         // If there are no requests in the queue, throw an exception.
         if (requests.isEmpty()) throw new NoEventRequestException("There are no pending requests.");
 
-        // Retrieve the element at the head of the queue and delete it
+        // Retrieve the element at the head of the queue and delete it.
         EventRequest er = requests.poll();
         totalRequests--;
 
@@ -168,12 +166,12 @@ public class UniversityEventsImpl implements UniversityEvents {
         if (foundEvent==null) throw new EventNotFoundException("The event does not exist.");
         if (!foundEvent.isAllowRegister()) throw new NotAllowedException("The event does not admit attendees");
 
-        boolean foundAttendee= false;
+        Attendee foundAttendee= null;
         for(Attendee attendee : attendees)
             if(attendee.getId().equals(attendeeId))
-                foundAttendee= true;
+                foundAttendee= attendee;
 
-        if (!foundAttendee) throw new AttendeeNotFoundException("The attendee does not exist.");
+        if (foundAttendee==null) throw new AttendeeNotFoundException("The attendee does not exist.");
 
         Iterator i= attendeesEvents.values();
         while (i.hasNext()){
@@ -188,10 +186,12 @@ public class UniversityEventsImpl implements UniversityEvents {
             if( ((AttendeeEvent)i.next()).getEventId().equals(eventId) )
                 count++;
         }
-        if (count<MAX_NUM_ATTENDEES)
+        if (count</*MAX_NUM_ATTENDEES*/ 5)
             attendeesEvents.insertEnd(new AttendeeEvent(attendeeId,eventId,"normal"));
         else
             attendeesEvents.insertEnd(new AttendeeEvent(attendeeId,eventId,"substitute"));
+
+        foundAttendee.incNumEvents();
 
     }
 
@@ -250,7 +250,7 @@ public class UniversityEventsImpl implements UniversityEvents {
 
     @Override
     public Iterator<Event> getEventsByAttendee(String attendeeId) throws NoEventsException {
-        return null;
+        //return null;
         /**
          * @pre the attendee exists.
          * @post
@@ -258,6 +258,26 @@ public class UniversityEventsImpl implements UniversityEvents {
          * @return returns an iterator for looping through events attended by an attendee.
          * @throws NoEventsException If the attendee has not participated in any event, the error will be reported
          */
+
+        ArrayList<Event> eventsAux = new ArrayList<>();
+        AttendeeEvent ae;
+        int count = 0;
+
+        Iterator i= attendeesEvents.values();
+        while (i.hasNext()){
+            ae= (AttendeeEvent) i.next();
+            if( ae.getAttendeeId().equals(attendeeId) ){
+
+                count ++;
+                for(Event event : events)
+                    if(event.getEntityId().equals(ae.getEventId()))
+                        eventsAux.add(event);
+
+            }
+        }
+        if (count==0) throw new NoEventsException("The attendee has not participated in any event.");
+        return new IteratorArrayImpl(eventsAux.toArray(), eventsAux.size(), 0);
+
     }
 
     @Override
@@ -286,29 +306,14 @@ public class UniversityEventsImpl implements UniversityEvents {
 
     @Override
     public Attendee mostActiveAttendee() throws AttendeeNotFoundException {
-        //return null;
-        /**
-         * @pre true.
-         * @post
-         * If there is a tie, the one that has signed up the most times before is provided.
-         * @return returns the attendee who has attended the most events, the most active attendee.
-         * @throws AttendeeNotFoundException If none exist, the error will be reported.
-         */
 
         if (attendeesEvents.isEmpty()) throw new AttendeeNotFoundException("There is no more active assistant.");
 
-
-
-        Attendee mostActiveAttendee = attendees.get(0);
+        mostActiveAttendee = attendees.get(0);
         for(Attendee attendee : attendees)
-            if(attendee.numEvents()>mostActiveAttendee.numEvents())
-                mostActiveAttendee= attendee;
+            if (attendee.numEvents() > mostActiveAttendee.numEvents())
+                mostActiveAttendee = attendee;
         return mostActiveAttendee;
-
-        //aqui
-
-
-
 
     }
 
@@ -345,11 +350,6 @@ public class UniversityEventsImpl implements UniversityEvents {
 
     @Override
     public int numEventsByAttendee(String attendeeId) {
-//        for(Attendee attendee : attendees)
-//            if(attendee.getId().equals(attendeeId))
-//                return attendee.numEvents();
-//        return 0;
-
 
         int count=0;
         Iterator i= attendeesEvents.values();
@@ -364,34 +364,30 @@ public class UniversityEventsImpl implements UniversityEvents {
     @Override
     public int numAttendeesByEvent(String eventId) {
 
-        /*
         int count=0;
         Iterator i= attendeesEvents.values();
         while (i.hasNext()){
-            AttendeeEvent e = ((AttendeeEvent)i.next());
-            if ( e.getEventId().equals(eventId) ) {
-                System.out.println(e.toString());
-                count++;
-            }
-        }
-        return count;
-         */
 
-
-        int count=0;
-        Iterator i= attendeesEvents.values();
-        while (i.hasNext()){
-            if ( ((AttendeeEvent)i.next()).getEventId().equals(eventId) )
+            AttendeeEvent ae = (AttendeeEvent)i.next();
+            if ( ae.getEventId().equals(eventId) && ae.getTypeAttendee().equals("normal") )
                 count++;
         }
         return count;
-
 
     }
 
     @Override
     public int numSubstitutesByEvent(String eventId) {
-        return 0;
+        int count=0;
+        Iterator i= attendeesEvents.values();
+        while (i.hasNext()){
+
+            AttendeeEvent ae = (AttendeeEvent)i.next();
+            if ( ae.getEventId().equals(eventId) && ae.getTypeAttendee().equals("substitute") )
+                count++;
+        }
+        return count;
+
     }
 
     @Override
