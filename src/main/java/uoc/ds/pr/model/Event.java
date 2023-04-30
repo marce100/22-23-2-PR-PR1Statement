@@ -50,6 +50,7 @@ public class Event {
     }
 
 
-
-
+    public void setRating(float rating) {
+        this.rating = rating;
+    }
 }

@@ -1,19 +1,15 @@
 package uoc.ds.pr;
 
 
-import edu.uoc.ds.adt.sequential.List;
 import edu.uoc.ds.adt.sequential.QueueArrayImpl;
 import edu.uoc.ds.traversal.*;
 import uoc.ds.pr.model.*;
 import uoc.ds.pr.exceptions.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.stream.Collectors;
 
 import edu.uoc.ds.adt.sequential.LinkedList;
-
-import javax.print.attribute.standard.MediaSize;
 
 public class UniversityEventsImpl implements UniversityEvents {
 
@@ -26,9 +22,8 @@ public class UniversityEventsImpl implements UniversityEvents {
 
 
     private LinkedList<AttendeeEvent> attendeesEvents;      // Events an attendee goes to: Linked List: LinkedList.
-    //private LinkedList<Rating> eventEvaluations;            // Evaluations of an event: Linked List: LinkedList.
+    private LinkedList<uoc.ds.pr.model.Rating> eventEvaluations;            // Evaluations of an event: Linked List: LinkedList.
     //private QueueArrayImpl<Attendee> eventRegistrations;    // Attendees pointed to an event : Queue: QueueArrayImpl.
-
 
 
     private int totalRequests;                              // Total Requests : Integer: Integer.
@@ -47,7 +42,7 @@ public class UniversityEventsImpl implements UniversityEvents {
 
 
         attendeesEvents= new LinkedList<AttendeeEvent>();
-        //eventEvaluations= new LinkedList<Rating>();
+        eventEvaluations= new LinkedList<uoc.ds.pr.model.Rating>();
         //eventRegistrations= new QueueArrayImpl<Attendee>();
 
 
@@ -282,26 +277,71 @@ public class UniversityEventsImpl implements UniversityEvents {
 
     @Override
     public void addRating(String attendeeId, String eventId, Rating rating, String message) throws AttendeeNotFoundException, EventNotFoundException, AttendeeNotInEventException {
-        /**
-         * @pre true.
-         * @post the ratings will be the same plus one.
-         * @throws AttendeeNotFoundException If the attendee does not exist, the error will be reported.
-         * @throws EventNotFoundException If the event does not exist, the error will be reported.
-         * @throws AttendeeNotInEventException If the attendee did not participate in the event, the error will be reported.
-         */
+
+        Attendee foundAttendee= null;
+        for(Attendee attendee : attendees)
+            if(attendee.getId().equals(attendeeId))
+                foundAttendee= attendee;
+        if (foundAttendee==null) throw new AttendeeNotFoundException("The attendee does not exist.");
+
+        Event foundEvent= null;
+        for(Event event : events)
+            if(event.getEventId().equals(eventId))
+                foundEvent= event;
+        if (foundEvent==null) throw new EventNotFoundException("The event does not exist.");
+
+        boolean found= false;
+        Iterator i= attendeesEvents.values();
+        AttendeeEvent ae;
+        while (i.hasNext()){
+            ae= (AttendeeEvent) i.next();
+            if ( ae.getAttendeeId().equals(attendeeId) && ae.getEventId().equals(eventId) )
+                found= true;
+        }
+        if (found==false) throw new AttendeeNotInEventException("The assistant does not take part in the event.");
+
+        eventEvaluations.insertEnd(new uoc.ds.pr.model.Rating(attendeeId, eventId, rating, message));
+
+        // Hay que actualizar también el rating del evento
+        int numRatings = numRatingsByEvent(eventId);
+        float totalRatings = 0;
+        try {
+            Iterator<uoc.ds.pr.model.Rating> j = getRatingsByEvent(eventId);
+            while (j.hasNext()) {
+                uoc.ds.pr.model.Rating r = (uoc.ds.pr.model.Rating) j.next();
+                if (r.getEventId().equals(eventId)) {
+                    totalRatings+=r.getRating().getValue();
+                }
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        foundEvent.setRating(totalRatings/numRatings);
+
     }
 
     @Override
     public Iterator<uoc.ds.pr.model.Rating> getRatingsByEvent(String eventId) throws EventNotFoundException, NoRatingsException {
-        return null;
-        /**
-         * @pre true.
-         * @post
-         *
-         * @return returns an iterator to loop through the ratings of an event.
-         * @throws EventNotFoundException If the event does not exist, the error will be reported.
-         * @throws NoRatingsException If there are no ratings, the error will be reported.
-         */
+
+        ArrayList<uoc.ds.pr.model.Rating> eventsAux = new ArrayList<>();
+        uoc.ds.pr.model.Rating ee;
+        int count = 0;
+
+        Iterator i= eventEvaluations.values();
+        while (i.hasNext()){
+            ee= (uoc.ds.pr.model.Rating) i.next();
+            if( ee.getEventId().equals(eventId) ){
+
+                count ++;
+                eventsAux.add(ee);
+
+            }
+        }
+        if (count==0) throw new EventNotFoundException("The event does not exist.");
+        if (eventsAux.size()==0) throw new EventNotFoundException("There are no ratings.");
+        return new IteratorArrayImpl(eventsAux.toArray(), eventsAux.size(), 0);
+
     }
 
     @Override
@@ -406,7 +446,15 @@ public class UniversityEventsImpl implements UniversityEvents {
 
     @Override
     public int numRatingsByEvent(String eventId) {
-        return 0;
+
+        int count = 0;
+        Iterator i= eventEvaluations.values();
+        while (i.hasNext()){
+            if (  ((uoc.ds.pr.model.Rating) i.next()).getEventId().equals(eventId) )
+                count++;
+        }
+        return count;
+
     }
 
     @Override
