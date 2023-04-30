@@ -259,15 +259,14 @@ public class UniversityEventsImpl implements UniversityEvents {
         int count = 0;
 
         Iterator i= attendeesEvents.values();
+        System.out.println("-----");
         while (i.hasNext()){
             ae= (AttendeeEvent) i.next();
             if( ae.getAttendeeId().equals(attendeeId) ){
-
                 count ++;
                 for(Event event : events)
-                    if(event.getEntityId().equals(ae.getEventId()))
+                    if (event.getEventId().equals(ae.getEventId()))
                         eventsAux.add(event);
-
             }
         }
         if (count==0) throw new NoEventsException("The attendee has not participated in any event.");
