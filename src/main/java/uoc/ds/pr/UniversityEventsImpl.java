@@ -359,13 +359,17 @@ public class UniversityEventsImpl implements UniversityEvents {
 
     @Override
     public Event bestEvent() throws EventNotFoundException {
-        return null;
-        /**
-         * @pre true.
-         * @post
-         * @return returns the highest-ranked event.
-         * @throws EventNotFoundException If no event exists, the error will be reported.
-         */
+
+        Event bestEvent = null;
+        float max = 0;
+        for(Event event : events)
+            if(event.rating()>max) {
+                max = event.rating();
+                bestEvent = event;
+            }
+        if (bestEvent==null) throw new EventNotFoundException("The event does not exist.");
+        return bestEvent;
+
     }
 
     @Override
@@ -393,10 +397,9 @@ public class UniversityEventsImpl implements UniversityEvents {
 
         int count=0;
         Iterator i= attendeesEvents.values();
-        while (i.hasNext()){
+        while (i.hasNext())
             if ( ((AttendeeEvent)i.next()).getAttendeeId().equals(attendeeId) )
                 count++;
-        }
         return count;
 
     }
