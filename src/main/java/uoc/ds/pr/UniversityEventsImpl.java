@@ -225,7 +225,9 @@ public class UniversityEventsImpl implements UniversityEvents {
                 .filter(event -> event.getEntityId() == entityId)
                 .collect(Collectors.toCollection(ArrayList::new));
 
-        return new IteratorArrayImpl(filteredList.toArray(), events.size(), 0);
+        return new IteratorArrayImpl(filteredList.toArray(), filteredList.size(), 0);
+
+
 
     }
 
@@ -259,7 +261,6 @@ public class UniversityEventsImpl implements UniversityEvents {
         int count = 0;
 
         Iterator i= attendeesEvents.values();
-        System.out.println("-----");
         while (i.hasNext()){
             ae= (AttendeeEvent) i.next();
             if( ae.getAttendeeId().equals(attendeeId) ){
@@ -431,11 +432,11 @@ public class UniversityEventsImpl implements UniversityEvents {
 
     @Override
     public int numEventsByEntity(String entityId) {
-        return 0;
-
-
-
-
+        int count=0;
+        for(Event event : events)
+            if(event.getEntityId().equals(entityId))
+                count++;
+        return count;
     }
 
     @Override
