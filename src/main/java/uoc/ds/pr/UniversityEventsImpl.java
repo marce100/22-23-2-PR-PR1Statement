@@ -32,16 +32,16 @@ import edu.uoc.ds.adt.sequential.LinkedList;
  */
 public class UniversityEventsImpl implements UniversityEvents {
 
-    private ArrayList<Attendee> attendees ;                 // Attendees: Java Array: Attendee [].
-    private QueueArrayImpl<EventRequest> requests;          // Requests : Queue: QueueArrayImpl.
-    private LinkedList<EventRequest> rejectedRequests;      // Rejected Requests: Linked List: LinkedList.
-    private ArrayList<Entity> entities ;                    // Entities: Java Array: Entities [].
-    private ArrayList<Event> events;                        // Events: Java Array: Events [].
-    private LinkedList<AttendeeEvent> attendeesEvents;      // Events an attendee goes to: Linked List: LinkedList.
-    private LinkedList<uoc.ds.pr.model.Rating> ratings;            // Evaluations of an event: Linked List: LinkedList.
-    private int totalRequests;                              // Total Requests : Integer: Integer.
-    private int totalRejectedRequests;                      // Total Rejected Requests : Integer: Integer.
-    private Attendee mostActiveAttendee;                    // Most Active Attendee: Pointer to Attendee.
+    private ArrayList<Attendee> attendees ;
+    private QueueArrayImpl<EventRequest> requests;
+    private LinkedList<EventRequest> rejectedRequests;
+    private ArrayList<Entity> entities ;
+    private ArrayList<Event> events;
+    private LinkedList<AttendeeEvent> attendeesEvents;
+    private LinkedList<uoc.ds.pr.model.Rating> ratings;
+    private int totalRequests;
+    private int totalRejectedRequests;
+    private Attendee mostActiveAttendee;
 
     public UniversityEventsImpl() {
         attendees= new ArrayList<Attendee>();
