@@ -1,7 +1,7 @@
-#DS - PR1
+# DS - PR1
 
- Author: Marcelino Álvarez García
- Github: https://github.com/marce100/22-23-2-PR-PR1Statement
+## Author: Marcelino Álvarez García
+## Github: https://github.com/marce100/22-23-2-PR-PR1Statement
  
  For the implementation of this class, we use the ADTs specified in the exercise 4 of the PEC1 solution:
  
