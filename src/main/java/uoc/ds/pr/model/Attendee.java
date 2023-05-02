@@ -1,7 +1,5 @@
 package uoc.ds.pr.model;
 
-
-
 import java.time.LocalDate;
 
 public class Attendee {
@@ -32,16 +30,8 @@ public class Attendee {
         return surname;
     }
 
-    public LocalDate getDateOfBirth() {
-        return dateOfBirth;
-    }
-
     public int numEvents() {
         return numEvents;
-    }
-
-    public void setId(String id) {
-        this.id = id;
     }
 
     public void setName(String name) {
@@ -59,11 +49,5 @@ public class Attendee {
     public void incNumEvents() {
         this.numEvents++;
     }
-
-    /*
-    public String toString(){
-        return " ---> attendeeId: "+getId()+" ---> numEvents: "+numEvents();
-    }
-    */
 
 }

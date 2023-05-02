@@ -1,11 +1,9 @@
 package uoc.ds.pr.exceptions;
 
-
 public class NoRatingsException extends DSException {
     private static final long serialVersionUID = -2577150645305791318L;
 
-    public NoRatingsException() {
-    }
+    public NoRatingsException() {    }
 
     public NoRatingsException(String message) {
         super(message);

@@ -1,11 +1,10 @@
 package uoc.ds.pr.exceptions;
 
-
 public class AttendeeNotFoundException extends DSException {
+
     private static final long serialVersionUID = -2577150645305791318L;
 
-    public AttendeeNotFoundException() {
-    }
+    public AttendeeNotFoundException() {    }
 
     public AttendeeNotFoundException(String message) {
         super(message);

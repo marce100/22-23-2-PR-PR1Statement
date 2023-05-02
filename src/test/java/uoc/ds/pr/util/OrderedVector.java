@@ -3,8 +3,6 @@ package uoc.ds.pr.util;
 import edu.uoc.ds.adt.sequential.FiniteContainer;
 import edu.uoc.ds.traversal.Iterator;
 import edu.uoc.ds.traversal.IteratorArrayImpl;
-import edu.uoc.ds.traversal.IteratorTraversalImpl;
-
 import java.util.Comparator;
 
 public class OrderedVector<Integer> implements FiniteContainer<Integer> {
@@ -17,10 +15,6 @@ public class OrderedVector<Integer> implements FiniteContainer<Integer> {
         this.comparator = comparator;
         this.data= (Integer[])new Object[max];
         this.len=0;
-    }
-
-    public Integer elementAt(int i) {
-        return this.data[i];
     }
 
     public void rshift(int i) {
@@ -43,7 +37,6 @@ public class OrderedVector<Integer> implements FiniteContainer<Integer> {
         int i = 0;
         boolean end=false;
         Integer v = null;
-
         this.delete(vIn);
 
         if (this.isFull()) {
@@ -58,7 +51,6 @@ public class OrderedVector<Integer> implements FiniteContainer<Integer> {
             i++;
 
         rshift(i);
-
         this.data[i]=vIn;
         this.len++;
 
@@ -68,14 +60,13 @@ public class OrderedVector<Integer> implements FiniteContainer<Integer> {
         return this.last();
     }
 
-
     @Override
     public boolean isEmpty() {
         return this.len==0;
     }
 
     public int size() {
-        return 0;
+        return data.length;
     }
 
     @Override
@@ -85,10 +76,6 @@ public class OrderedVector<Integer> implements FiniteContainer<Integer> {
 
     public boolean isFull() {
         return this.len==this.data.length;
-    }
-
-    public int numElements(){
-        return this.len;
     }
 
     public void delete (Integer elem) {

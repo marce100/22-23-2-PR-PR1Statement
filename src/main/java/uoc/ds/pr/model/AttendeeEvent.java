@@ -1,6 +1,7 @@
 package uoc.ds.pr.model;
 
 public class AttendeeEvent {
+
     private String attendeeId;
     private String eventId;
     private String typeAttendee;
@@ -20,14 +21,5 @@ public class AttendeeEvent {
     }
 
     public String getTypeAttendee() { return typeAttendee; }
-
-
-
-
-    /*
-    public String toString(){
-        return "--> eventId: "+getEventId()+" --> attendeeId: "+getAttendeeId()+" --> typeAttendee: "+getTypeAttendee();
-    }
-    */
 
 }

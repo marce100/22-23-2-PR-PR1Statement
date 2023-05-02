@@ -1,10 +1,10 @@
 package uoc.ds.pr.model;
 
 import uoc.ds.pr.UniversityEvents;
-
 import java.time.LocalDate;
 
 public class EventRequest {
+
     private String id;
     private String eventId;
     private String entityId;
@@ -30,10 +30,6 @@ public class EventRequest {
     }
 
     public String getRequestId() {
-        return id;
-    }
-
-    public String getId() {
         return id;
     }
 
@@ -72,4 +68,5 @@ public class EventRequest {
     public boolean isAllowRegister() {
         return allowRegister;
     }
+
 }
