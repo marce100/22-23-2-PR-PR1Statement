@@ -18,3 +18,7 @@
  * Total Rejected Requests : Integer: Integer.
  * Most Active Attendee: Pointer to Attendee.
  * Highest Rated Event: Ordered Vector: OrderedVector.
+
+ Added new test class:
+ 
+ * UniversityEventsPR1Test2
